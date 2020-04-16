@@ -1,9 +1,15 @@
 const { handler } = require("../src/index.js");
+const fs = require('fs').promises;
+
 jest.mock('aws-sdk', () => {
   var AWSMock = require('mock-aws-s3');
-  AWSMock.config.basePath = '../tmp/buckets/'
+  AWSMock.config.basePath = `${process.cwd()}/test/tmp/buckets`
   return AWSMock
 })
+
+beforeEach(async () => {
+  await fs.copyFile(`test/tmp/intermediate_file.tif`, "test/tmp/buckets/awsexamplebucket/intermediate_file.tif")
+});
 
 const event = {
   "invocationSchemaVersion": "1.0",
@@ -14,7 +20,7 @@ const event = {
   "tasks": [
     {
       "taskId": "dGFza2lkZ29lc2hlcmUK",
-      "s3Key": "customerImage1.jpg",
+      "s3Key": "intermediate_file.tif",
       "s3VersionId": "1",
       "s3BucketArn": "arn:aws:s3:us-east-1:0123456788:awsexamplebucket"
     }
