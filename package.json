@@ -5,9 +5,14 @@
   "author": "Trey Pendragon",
   "license": "Apache-2.0",
   "dependencies": {
-    "aws-sdk": "^2.368.0"
+    "aws-sdk": "^2.368.0",
+    "sharp": "^0.24.0"
   },
   "devDependencies": {
-    "jest": "^25.3.0"
+    "jest": "^25.3.0",
+    "mock-aws-s3": "^4.0.1"
+  },
+  "scripts": {
+    "test": "./node_modules/jest/bin/jest.js"
   }
 }
