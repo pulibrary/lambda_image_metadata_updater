@@ -1,14 +1,13 @@
 const { handler } = require("../src/index.js");
 const fs = require('fs').promises;
-
-jest.mock('aws-sdk', () => {
-  var AWSMock = require('mock-aws-s3');
-  AWSMock.config.basePath = `${process.cwd()}/test/tmp/buckets`
-  return AWSMock
+const AWS = require('aws-sdk-mock')
+let copy = jest.fn((params, cb) => {
+  cb(null, {})
 })
 
 beforeEach(async () => {
-  await fs.copyFile(`test/tmp/intermediate_file.tif`, "test/tmp/buckets/awsexamplebucket/intermediate_file.tif")
+  AWS.mock("S3", "getObject", Buffer.from(require('fs').readFileSync("test/tmp/intermediate_file.tif")))
+  AWS.mock("S3", "copyObject", copy)
 });
 
 const event = {
@@ -28,5 +27,13 @@ const event = {
 }
 
 test("extracts the width and height of an image stream", async () => {
-  result = await handler(event, {})
+  const result = await handler(event, {})
+  expect(copy.mock.calls.length).toBe(1)
+  const first_call_params = copy.mock.calls[0][0]
+  expect(first_call_params.Metadata.height).toBe("3000")
+  expect(first_call_params.Metadata.width).toBe("4500")
+  expect(first_call_params.MetadataDirective).toBe("REPLACE")
+  expect(first_call_params.CopySource).toBe("/awsexamplebucket/intermediate_file.tif")
+  expect(first_call_params.Bucket).toBe("awsexamplebucket")
+  expect(first_call_params.Key).toBe("intermediate_file.tif")
 });
