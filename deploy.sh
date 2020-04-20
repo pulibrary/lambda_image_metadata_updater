@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+cd dependencies/nodejs && rm -rf node_modules && rm package-lock.json
+docker run -v "$PWD":/var/task lambci/lambda:build-nodejs12.x npm install --only=production
+cd ../../
 if [ $1 == "production" ]
 then
   sam deploy --stack-name=image-metadata-extractor-production \
