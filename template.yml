@@ -1,0 +1,60 @@
+Transform: "AWS::Serverless-2016-10-31"
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: lambda_image_metadata_updater
+    Description: Bulk width/height metadata extractor for a bucket of images.
+    Author: tpendragon
+    SpdxLicenseId: Apache-2.0
+    Labels: ["iiif", "image-processing"]
+    HomePageUrl: https://github.com/pulibrary/lambda_image_metadata_updater
+    SemanticVersion: 1.0.0
+    SourceCodeUrl: https://github.com/pulibrary/lambda_image_metadata_updater
+Parameters:
+  SourceBucket:
+    Type: String
+    Description: Name of bucket containing source images
+  StageName:
+    Type: String
+    Description: Name of the API stage to be deployed
+    Default: latest
+Resources:
+  Dependencies:
+    Type: "AWS::Serverless::LayerVersion"
+    Properties:
+      LayerName: !Sub "${AWS::StackName}-dependencies"
+      Description: Dependencies for extractor
+      ContentUri: ./dependencies
+      CompatibleRuntimes:
+        - nodejs12.x
+      LicenseInfo: "Apache-2.0"
+  IiifFunction:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      Runtime: nodejs12.x
+      Handler: index.handler
+      MemorySize: 3008
+      Timeout: 30
+      CodeUri: ./src
+      Layers:
+        - !Ref Dependencies
+      Policies:
+        - AWSLambdaExecute
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:ListBucket
+                - s3:GetBucketLocation
+              Resource: !Sub "arn:aws:s3:::${SourceBucket}"
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:GetObjectACL
+                - s3:PutObject
+                - s3:DeleteObject
+                - s3:PutObjectACL
+              Resource: !Sub "arn:aws:s3:::${SourceBucket}/*"
+            - Effect: Allow
+              Action:
+                - s3:ListAllMyBuckets
+              Resource: "*"

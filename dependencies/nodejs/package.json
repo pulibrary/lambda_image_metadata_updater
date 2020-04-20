@@ -1,1 +1,18 @@
-../../package.json
+{
+  "name": "lambda_processor",
+  "version": "1.0.0",
+  "description": "Simple processor to add width/height in a batch way to S3 images in a bucket.",
+  "author": "Trey Pendragon",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "aws-sdk": "^2.368.0",
+    "sharp": "^0.24.0"
+  },
+  "devDependencies": {
+    "aws-sdk-mock": "^5.1.0",
+    "jest": "^25.3.0"
+  },
+  "scripts": {
+    "test": "./node_modules/jest/bin/jest.js"
+  }
+}
