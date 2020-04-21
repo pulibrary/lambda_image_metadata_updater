@@ -36,4 +36,16 @@ test("extracts the width and height of an image stream", async () => {
   expect(first_call_params.CopySource).toBe("/awsexamplebucket/intermediate_file.tif")
   expect(first_call_params.Bucket).toBe("awsexamplebucket")
   expect(first_call_params.Key).toBe("intermediate_file.tif")
+  expect(result).toStrictEqual({
+    "invocationSchemaVersion": "1.0",
+    "treatMissingKeysAs" : "PermanentFailure",
+    "invocationId" : "YXNkbGZqYWRmaiBhc2RmdW9hZHNmZGpmaGFzbGtkaGZza2RmaAo",
+    "results": [
+      {
+        "taskId": "dGFza2lkZ29lc2hlcmUK",
+        "resultCode": "Succeeded",
+        "resultString": "Done"
+      }
+    ]
+  })
 });

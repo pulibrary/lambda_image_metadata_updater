@@ -8,9 +8,21 @@ const requestHandler = async function(event, context) {
     let s3Key = task.s3Key
     let bucketArn = task.s3BucketArn
     let bucket = bucketArn.split(':').pop()
-    return new ImageMetadataUpdater(s3, bucket, s3Key).update()
+    return (new ImageMetadataUpdater(s3, bucket, s3Key).update()).then(() => {
+      return {
+        "taskId": task.taskId,
+        "resultCode": "Succeeded",
+        "resultString": "Done"
+      }
+    })
   })
-  return Promise.all(tasks)
+  output = await Promise.all(tasks)
+  return {
+    "invocationSchemaVersion": "1.0",
+    "treatMissingKeysAs" : "PermanentFailure",
+    "invocationId" : event.invocationId,
+    "results": output
+  }
 }
 
 class ImageMetadataUpdater {
