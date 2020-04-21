@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "aws-sdk": "^2.368.0",
-    "sharp": "^0.24.0"
+    "sharp": "^0.25.2"
   },
   "devDependencies": {
     "aws-sdk-mock": "^5.1.0",
