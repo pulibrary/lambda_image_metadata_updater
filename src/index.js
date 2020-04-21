@@ -42,7 +42,7 @@ class ImageMetadataUpdater {
   async update () {
     const object = this.s3Object()
     const stream = object.createReadStream()
-    const metaReader = sharp()
+    const metaReader = sharp({limitInputPixels: false})
     const metadata = metaReader.metadata()
     stream.pipe(metaReader)
     const result = await metadata
