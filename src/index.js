@@ -16,7 +16,7 @@ const requestHandler = async function(event, context) {
       }
     })
   })
-  output = await Promise.all(tasks)
+  const output = await Promise.all(tasks)
   return {
     "invocationSchemaVersion": "1.0",
     "treatMissingKeysAs" : "PermanentFailure",
