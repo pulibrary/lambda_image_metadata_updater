@@ -21,22 +21,25 @@ Resources:
   Dependencies:
     Type: "AWS::Serverless::LayerVersion"
     Properties:
-      LayerName: !Sub "${AWS::StackName}-dependencies"
+      LayerName:
+        Fn::Sub: "${AWS::StackName}-dependencies"
       Description: Dependencies for extractor
       ContentUri: ./dependencies
       CompatibleRuntimes:
-        - nodejs12.x
+        - nodejs20.x
       LicenseInfo: "Apache-2.0"
-  IiifFunction:
+    Metadata:
+      BuildMethod: nodejs20.x
+  ImageMetadataExtractorFunction:
     Type: "AWS::Serverless::Function"
     Properties:
-      Runtime: nodejs12.x
+      Runtime: nodejs20.x
       Handler: index.handler
       MemorySize: 3008
       Timeout: 30
       CodeUri: ./src
       Layers:
-        - !Ref Dependencies
+        - Ref: Dependencies
       Policies:
         - AWSLambdaExecute
         - Version: "2012-10-17"
