@@ -1,8 +1,8 @@
-const AWS = require('aws-sdk')
+const { S3Client, GetObjectCommand, CopyObjectCommand, S3ServiceException } = require('@aws-sdk/client-s3');
 const sharp = require('sharp')
 
 const requestHandler = async function(event, context) {
-  const s3 = new AWS.S3()
+  const s3 = new S3Client({});
   var tasks = event.tasks.map((task) => {
     let id = task.taskId
     let s3Key = task.s3Key
@@ -32,27 +32,24 @@ class ImageMetadataUpdater {
     this.key = s3Key
   }
 
-  s3Object () {
-    return this.client.getObject({
+  async update () {
+    const getCommand = new GetObjectCommand({
       Bucket: this.bucket,
       Key: this.key
-    })
-  }
-
-  async update () {
-    const object = this.s3Object()
-    const stream = object.createReadStream()
-    const metaReader = sharp({limitInputPixels: false})
-    const metadata = metaReader.metadata()
-    stream.pipe(metaReader)
+    });
+    const response = await this.client.send(getCommand)
+    const metaReader = sharp({limitInputPixels: false});
+    const metadata = metaReader.metadata();
+    response.Body.pipe(metaReader);
     const result = await metadata
-    return this.client.copyObject({
+    const copyCommand = new CopyObjectCommand({
       Bucket: this.bucket,
       Key: this.key,
       CopySource: `/${this.bucket}/${this.key}`,
-      Metadata: { "width": `${result.width}`, "height": `${result.height}` },
+      Metadata: { "width": `${result.width}`, "height": `${result.height}`, "pages": `${result.pages}` },
       MetadataDirective: "REPLACE"
-    }).promise()
+    });
+    return this.client.send(copyCommand);
   }
 }
 

@@ -2,6 +2,6 @@
 .aws-sam
 deploy.yaml
 node_modules
-package-lock.json
+./package-lock.json
 samconfig.toml
 test/tmp/buckets/awsexamplebucket/intermediate_file.tif
